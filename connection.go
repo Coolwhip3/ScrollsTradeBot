@@ -25,7 +25,11 @@ func SendRequest(con net.Conn, req Request) bool {
 
 func ListenTo(url string) (net.Conn, chan []byte) {
 	con, err := net.Dial("tcp", url)
-	deny(err)
+	if err != nil {
+		log.Printf("failed to connect to %s. Waiting for 5 minutes..", url)
+		time.Sleep(time.Minute * 5)
+		return ListenTo(url)
+	}
 	ch := make(chan []byte)
 
 	go func() {
