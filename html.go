@@ -55,7 +55,7 @@ func showPriceTable(s *State) string {
 			Just join the ingame channel "clockwork" and say "!trade". You will then be queued up for interaction with the bot in a trade.<br><br>
 			
 			<b>Why are these prices so different from Scrollsguide prices?</b><br>
-			Scrollsguide prices4 are determined from WTB and WTS messages in the Trading-channel. Thus they reflect what people expect to pay/get
+			Scrollsguide prices are determined from WTB and WTS messages in the Trading-channel. Thus they reflect what people expect to pay/get
 			for a card, not necessarily what the card is actually traded for. Since most people adjust their expectations to what the current Scrollsguide
 			price is, this can lead to a self-fulfilling prophecy. Also, it is pretty easy to manipulate the prices for cards that are traded less often,
 			enabling a way to scam the bot if it would use these prices.<br><br>
