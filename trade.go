@@ -118,7 +118,7 @@ func (s *State) DeterminePrice(card Card, num int, buy bool) int {
 		stocked := Stocks[Bot][card]
 
 		value := func(card Card, stocked int) float64 {
-			return MaximumValue(card) * (1.0 - 1/StockDepth*float64(stocked))
+			return MaximumValue(card) * (1.0 - float64(stocked)/StockDepth)
 		}
 
 		for i := 0; i < num; i++ {
