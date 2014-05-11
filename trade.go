@@ -100,7 +100,7 @@ func MinimumValue(card Card) int {
 func MaximumValue(card Card) int {
 	switch CardRarities[card] {
 	case 0:
-		return 175
+		return 162.5
 	case 1:
 		return 650
 	case 2:
@@ -117,7 +117,7 @@ func (s *State) DeterminePrice(card Card, num int, buy bool) int {
 
 		value := func(card Card, stocked int) float64 {
 			basePrice := float64(MaximumValue(card))
-			return basePrice * (1.0 - 1./12.*float64(stocked))
+			return basePrice * (1.0 - 1./13.*float64(stocked))
 		}
 
 		for i := 0; i < num; i++ {
