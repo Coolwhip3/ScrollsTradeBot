@@ -100,7 +100,7 @@ func MinimumValue(card Card) int {
 func MaximumValue(card Card) int {
 	switch CardRarities[card] {
 	case 0:
-		return 162.5
+		return 163
 	case 1:
 		return 650
 	case 2:
