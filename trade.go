@@ -124,12 +124,12 @@ func (s *State) DeterminePrice(card Card, num int, buy bool) int {
 		for i := 0; i < num; i++ {
 			if buy {
 				goldFactor := math.Min(float64(Gold), 10000.0)/20000.0 + 0.5
-				price += int(math.Max(float64(MinimumValue(card)), value(card, stocked)*goldFactor))
+				price += int(math.Max(float64(MinimumValue(card)), value(card, stocked)*goldFactor) + 0.5)
 				stocked++
 
 			} else {
 				stocked--
-				price += int(math.Max(float64(MinimumValue(card)), value(card, stocked)*1.00))
+				price += int(math.Max(float64(MinimumValue(card)), value(card, stocked)*1.00) + 0.5)
 			}
 		}
 		return price
