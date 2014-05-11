@@ -13,6 +13,8 @@ import (
 	"time"
 )
 
+const StockDepth = 13
+
 type Price struct{ Buy, Sell int }
 
 var SGPrices = make(map[Card]Price)
@@ -66,7 +68,7 @@ func LoadPrices() {
 	deny(err)
 
 	for id, name := range CardTypes {
-		p := Price{Buy: MinimumValue(name), Sell: MaximumValue(name)}
+		p := Price{Buy: MinimumValue(name), Sell: int(MaximumValue(name))}
 		for _, data := range v.Data {
 			if data.Id == id {
 				if data.Buy > p.Buy {
@@ -97,14 +99,14 @@ func MinimumValue(card Card) int {
 	return -1
 }
 
-func MaximumValue(card Card) int {
+func MaximumValue(card Card) float64 {
 	switch CardRarities[card] {
 	case 0:
-		return 163
+		return StockDepth * 12.5
 	case 1:
-		return 650
+		return StockDepth * 50
 	case 2:
-		return 1300
+		return StockDepth * 100
 	}
 	return -1
 }
@@ -116,8 +118,7 @@ func (s *State) DeterminePrice(card Card, num int, buy bool) int {
 		stocked := Stocks[Bot][card]
 
 		value := func(card Card, stocked int) float64 {
-			basePrice := float64(MaximumValue(card))
-			return basePrice * (1.0 - 1./13.*float64(stocked))
+			return MaximumValue(card) * (1.0 - 1/StockDepth*float64(stocked))
 		}
 
 		for i := 0; i < num; i++ {
