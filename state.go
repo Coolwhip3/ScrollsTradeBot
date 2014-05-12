@@ -31,7 +31,7 @@ var (
 	CardRarities = make(map[Card]int)
 	Libraries    = make(map[Player]MLibraryView)
 	Stocks       = make(map[Player]map[Card]int)
-	PlayerIds    = make(map[Player]string)
+	PlayerIds    = make(map[Player]PlayerId)
 )
 
 func InitState(con net.Conn) *State {
@@ -267,8 +267,9 @@ func (s *State) HandleReply(reply []byte) bool {
 	case "RoomInfo":
 		var v MRoomInfo
 		json.Unmarshal(reply, &v)
+
 		for _, player := range v.Updated {
-			PlayerIds[player.Name] = player.Id
+			PlayerIds[player.Name] = player.ProfileId
 		}
 	case "ServerInfo":
 		var v MServerInfo

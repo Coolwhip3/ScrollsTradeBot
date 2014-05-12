@@ -61,7 +61,7 @@ func showPriceTable(s *State) string {
 			enabling a way to scam the bot if it would use these prices.<br><br>
 
 			<b>How then are these prices calculated?</b><br>
-			The price starts at 1300 for rares, 650 for uncommons and 162 for commons. Each time a card is sold to the bot, it will assume that
+			The price starts at 1500 for rares, 750 for uncommons and 187 for commons. Each time a card is sold to the bot, it will assume that
 			the card is less valuable, reducing the price by 100 / 50 / 12.5 depending on rarity. Each time a card is bought from the bot, the price will
 			go up again.<br><br>
 

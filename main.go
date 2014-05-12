@@ -32,9 +32,9 @@ func main() {
 	login, err := ioutil.ReadFile("login.txt")
 	deny(err)
 
-	lines := strings.Split(string(login), "\n")
-	if len(lines) != 2 { // try windows line endings
-		lines = strings.Split(string(login), "\r\n")
+	lines := strings.Split(string(login), "\r\n")
+	if len(lines) != 2 { // try unix line endings
+		lines = strings.Split(string(login), "\n")
 	}
 	if len(lines) != 2 {
 		panic("could not read email/password from login.txt")
@@ -43,7 +43,7 @@ func main() {
 	email, password := lines[0], lines[1]
 	go startWebServer()
 
-	startBot(email, password, "Hello world!")
+	startBot(email, password, "")
 	for {
 		startBot(email, password, "I live again!")
 	}
@@ -152,7 +152,7 @@ func startBot(email, password, helloMessage string) {
 					command = strings.Replace(command, "wt", "!wt", 1)
 				}
 
-				if m.Channel == "WHISPER" && !strings.HasPrefix(command, "!") {
+				if !strings.HasPrefix(command, "!") {
 					command = "!" + command
 				}
 

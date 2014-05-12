@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-const StockDepth = 13
+const StockDepth = 15
 
 type Price struct{ Buy, Sell int }
 
@@ -188,7 +188,7 @@ func (s *State) ParseTradeView(v MTradeView) {
 }
 
 func (s *State) InitiateTrade(player Player, timeout time.Duration) chan TradeStatus {
-	s.SendRequest(Request{"msg": "TradeInvite", "profile": PlayerIds[player]})
+	s.SendRequest(Request{"msg": "TradeInvite", "profileId": PlayerIds[player]})
 	accepted := false
 	TradeRoom = ""
 
@@ -359,45 +359,43 @@ func (s *State) Trade(tradePartner Player) (ts TradeStatus) {
 						requestedCards, ambiguousWords, failedWords := parseCardList(cardlist)
 
 						WTBrequests[tradePartner] = requestedCards
-						if len(requestedCards) > 0 {
-							missing := make(map[Card]int)
-							for requestedCard, num := range requestedCards {
-								skip := ts.My.Cards[requestedCard]
-								for _, card := range Libraries[Bot].Cards {
-									if CardTypes[card.TypeId] != requestedCard || !card.Tradable {
-										continue
-									}
-									skip--
-									if num > 0 && skip < 0 {
-										cardIds = append(cardIds, card.Id)
-										num--
-									}
+						missing := make(map[Card]int)
+						for requestedCard, num := range requestedCards {
+							skip := ts.My.Cards[requestedCard]
+							for _, card := range Libraries[Bot].Cards {
+								if CardTypes[card.TypeId] != requestedCard || !card.Tradable {
+									continue
 								}
-								if num > 0 {
-									missing[requestedCard] = num
+								skip--
+								if num > 0 && skip < 0 {
+									cardIds = append(cardIds, card.Id)
+									num--
 								}
 							}
+							if num > 0 {
+								missing[requestedCard] = num
+							}
+						}
 
-							reply := ""
-							if len(missing) > 0 {
-								list := make([]string, 0, len(missing))
-								for card, num := range missing {
-									list = append(list, fmt.Sprintf("%dx %s", num, card))
-								}
-								reply = fmt.Sprintf("I don't have %s. ", strings.Join(list, ", "))
+						reply := ""
+						if len(missing) > 0 {
+							list := make([]string, 0, len(missing))
+							for card, num := range missing {
+								list = append(list, fmt.Sprintf("%dx %s", num, card))
 							}
-							for _, word := range ambiguousWords {
-								reply += fmt.Sprintf("'%s' is %s. ", word, orify(matchCardName(word)))
-							}
-							if len(failedWords) > 0 {
-								reply += fmt.Sprintf("I don't know what '%s' is. ", cardlist)
-							}
-							if reply != "" {
-								s.Say(TradeRoom, reply)
-							}
-							if len(cardIds) > 0 {
-								s.SendRequest(Request{"msg": "TradeAddCards", "cardIds": cardIds})
-							}
+							reply = fmt.Sprintf("I don't have %s. ", strings.Join(list, ", "))
+						}
+						for _, word := range ambiguousWords {
+							reply += fmt.Sprintf("'%s' is %s. ", word, orify(matchCardName(word)))
+						}
+						if len(failedWords) > 0 {
+							reply += fmt.Sprintf("I don't know what '%s' is. ", cardlist)
+						}
+						if reply != "" {
+							s.Say(TradeRoom, reply)
+						}
+						if len(cardIds) > 0 {
+							s.SendRequest(Request{"msg": "TradeAddCards", "cardIds": cardIds})
 						}
 
 					} else if command == "!remove" {
