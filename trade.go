@@ -271,14 +271,14 @@ func (s *State) Trade(tradePartner Player) (ts TradeStatus) {
 			case m := <-messages:
 				if m.From == tradePartner && m.Channel == TradeRoom {
 					lastActivity = time.Now()
-					command := strings.ToLower(m.Text)
+					command := strings.TrimPrefix(strings.ToLower(m.Text), "!")
 
-					if command == "!help" {
+					if command == "help" {
 						s.Say(TradeRoom, "Just add the scrolls you want to sell on your side. To buy scrolls from me, say 'wtb [list of scrolls]'"+
 							" and I'll add everything I have on that list. You can also !add or !remove single cards."+
 							" Not sure about the gold? Just ask for the !price and I'll list it up.")
 
-					} else if command == "!donation" {
+					} else if command == "donation" {
 						donation = !donation
 						if donation {
 							s.Say(TradeRoom, "I will consider everything you put into this trade as a donation. Much appreciated!"+
@@ -287,7 +287,7 @@ func (s *State) Trade(tradePartner Player) (ts TradeStatus) {
 							s.Say(TradeRoom, "Okay :(")
 						}
 
-					} else if command == "!reset" {
+					} else if command == "reset" {
 						for cardName, num := range ts.My.Cards {
 							for _, card := range Libraries[Bot].Cards {
 								if CardTypes[card.TypeId] == cardName && card.Tradable {
@@ -300,7 +300,7 @@ func (s *State) Trade(tradePartner Player) (ts TradeStatus) {
 							}
 						}
 
-					} else if command == "!price" {
+					} else if command == "price" {
 						format := func(card Card, num int) string {
 							if num > 1 {
 								return fmt.Sprintf("%dx %s", num, card)
@@ -349,9 +349,8 @@ func (s *State) Trade(tradePartner Player) (ts TradeStatus) {
 						}
 						s.Say(m.Channel, msg)
 
-					} else if strings.HasPrefix(command, "!add") || strings.HasPrefix(command, "!wtb") || strings.HasPrefix(command, "wtb") {
-						cardlist := strings.TrimPrefix(command, "!add")
-						cardlist = strings.TrimPrefix(cardlist, "!wtb")
+					} else if strings.HasPrefix(command, "add") || strings.HasPrefix(command, "wtb") {
+						cardlist := strings.TrimPrefix(command, "add")
 						cardlist = strings.TrimPrefix(cardlist, "wtb")
 
 						cardIds := make([]CardUid, 0)
@@ -398,11 +397,11 @@ func (s *State) Trade(tradePartner Player) (ts TradeStatus) {
 							s.SendRequest(Request{"msg": "TradeAddCards", "cardIds": cardIds})
 						}
 
-					} else if command == "!remove" {
+					} else if command == "remove" {
 						s.Say(TradeRoom, "You have to name the card that I will remove.")
 
-					} else if strings.HasPrefix(command, "!remove") {
-						params := strings.TrimPrefix(command, "!remove ")
+					} else if strings.HasPrefix(command, "remove") {
+						params := strings.TrimPrefix(command, "remove ")
 						matchedCards := matchCardName(params)
 						switch len(matchedCards) {
 						case 0:
