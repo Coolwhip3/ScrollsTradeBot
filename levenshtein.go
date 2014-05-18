@@ -51,6 +51,11 @@ func matchCardName(input string) []Card {
 
 	for _, card := range CardTypes {
 		cardStr := strings.ToLower(string(card))
+		// magic for uniques
+		if input == strings.Split(cardStr, ",")[0] {
+			return []Card{card}
+		}
+
 		if input == cardStr {
 			return []Card{card}
 		}
@@ -102,6 +107,7 @@ func parseCardList(str string) (cards map[Card]int, ambiguousWords, failedWords 
 
 	for _, word := range strings.Split(str, ",") {
 		word = reInvalidChars.ReplaceAllString(strings.ToLower(word), "")
+		word = strings.TrimSpace(word)
 
 		num := 1
 		match := reNumbers.FindStringSubmatch(word)
