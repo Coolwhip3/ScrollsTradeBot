@@ -14,11 +14,12 @@ const (
     GeneralTwo = "general-2"
 
 func main() {
-	// Logging..
-	//f, err := os.OpenFile("system.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-	//deny(err)
-	//log.SetOutput(f)
-	log.SetOutput(ioutil.Discard)
+	Log.Println("Starting up")
+	
+	f, err := os.OpenFile("log.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	deny(err)
+	log.SetOutput(f)
+	// log.SetOutput(ioutil.Discard)
 
 	// Get email and password from the login.txt file (2 lines)
 	login, err := ioutil.ReadFile("login.txt")
@@ -45,7 +46,7 @@ func StartBot(email, password) {
 		log.Println("Shut bot down.")
 	}()
 
-	s, chAlive := Connect(email, password, owner)
+	s, chAlive := Connect(email, password)
 	log.Println(s, chAlive)
 
 	s.JoinRoom(MyRoom)
