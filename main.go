@@ -43,7 +43,7 @@ func main() {
 	go startWebServer()
 
         for {
-		startBot(email, password, HelloMessage)
+		StartBot(email, password, HelloMessage)
 	}
 }
 
