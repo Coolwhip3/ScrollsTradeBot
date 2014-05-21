@@ -18,11 +18,10 @@ const (
     TradeOne = "trading-1"
     TradeTwo = "trading-2"
     GeneralOne = "general-1"
-    GeneralTwo = "general-2"
+    GeneralTwo = "general-2" )
    
 var WTBrequests = make(map[Player]map[Card]int)
 var Bot Player
-var Conf *Config
 var currentState *State
 
 
