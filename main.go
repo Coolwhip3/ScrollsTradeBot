@@ -5,8 +5,6 @@ import (
 	"os"
 	"time"
 	"io/ioutil"
-	"math/rand"
-	"regexp"
 	"strings"
 
 )
@@ -24,12 +22,6 @@ var currentState *State
 
 
 func main() {
-	Log.Println("Starting up")
-	
-	f, err := os.OpenFile("log.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-	deny(err)
-	log.SetOutput(f)
-	// log.SetOutput(ioutil.Discard)
 
 	// Get email and password from the login.txt file (2 lines)
 	login, err := ioutil.ReadFile("login.txt")
@@ -54,7 +46,7 @@ func main() {
 	                s.startMessageHandlingThread(queue, chKillThread)
 	}
 }
-func StartBot(email, password) {
+func StartBot(email, password, HelloMessage) {
 	defer func() {
 		log.Println("Shut bot down.")
 	}()
