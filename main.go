@@ -15,11 +15,10 @@ const (
     GeneralOne = "general-1"
     GeneralTwo = "general-2" 
     HelloMessage = "I am a automated trading bot, if you don't know what to do you can just check the !help"
+    email = ""
+    password = ""
     )
     
-var reNumbers = regexp.MustCompile(`x?(\d+)x?`)
-var reInvalidChars = regexp.MustCompile("[^a-z'0-9 ]")
-   
 var WTBrequests = make(map[Player]map[Card]int)
 var Bot Player
 var currentState *State
