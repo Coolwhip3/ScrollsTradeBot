@@ -19,6 +19,12 @@ const (
     TradeTwo = "trading-2"
     GeneralOne = "general-1"
     GeneralTwo = "general-2"
+   
+var WTBrequests = make(map[Player]map[Card]int)
+var Bot Player
+var Conf *Config
+var currentState *State
+
 
 func main() {
 	Log.Println("Starting up")
@@ -46,6 +52,9 @@ func main() {
 	startBot(email, password, "")
 	for {
 		startBot(email, password, "I live again!")
+			s.joinRoomsAndSayHi()
+	                s.startTradeThread(queue)
+	                s.startMessageHandlingThread(queue, chKillThread)
 	}
 }
 func StartBot(email, password) {
@@ -71,21 +80,49 @@ func StartBot(email, password) {
 
 	for {
 		timeout := time.After(time.Minute * 1)
-		InnerLoop:
+	InnerLoop:
 		for {
 			select {
-				case <-chAlive:
-					break InnerLoop
-				case <-s.chQuit:
-					log.Println("Bot Quit")
-					s.chQuit <- true
-					return
-				case <-timeout:
-					log.Println("Time out")
-					return
+			case <-chAlive:
+				break InnerLoop
+			case <-s.chQuit:
+				log.Println("!!!main QUIT!!!")
+				s.chQuit <- true
+				return
+			case <-timeout:
+				log.Println("!!!TIMEOUT!!!")
+				return
 			}
 		}
 	}
+}
+
+func (s *State) startMessageHandlingThread(queue chan<- Player, chKillThread chan bool) {
+	go func() {
+		messages := s.Listen()
+		defer s.Shut(messages)
+		for {
+			select {
+			case <-chKillThread:
+				return
+			case m := <-messages:
+				s.HandleMessages(m, queue)
+			}
+		}
+	}()
+}
+
+func (s *State) startTradeThread(queue <-chan Player) {
+
+	go func() {
+		for {
+			player := <-queue
+			s.Trade(player)
+			if len(queue) == 0 {
+				s.Say(MyRoom, "Finished trading.")
+			}
+		}
+	}()
 }
 
 // Some error handling, could be improved
