@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"os"
 	"time"
 	"io/ioutil"
 	"strings"
@@ -38,15 +37,12 @@ func main() {
 	email, password := lines[0], lines[1]
 	go startWebServer()
 
-	startBot(email, password, "")
-	for {
-		startBot(email, password, "I live again!")
-			s.joinRoomsAndSayHi()
-	                s.startTradeThread(queue)
-	                s.startMessageHandlingThread(queue, chKillThread)
+        for {
+		startBot(email, password, HelloMessage)
 	}
 }
-func StartBot(email, password, HelloMessage) {
+
+func StartBot(email, password) {
 	defer func() {
 		log.Println("Shut bot down.")
 	}()
