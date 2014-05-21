@@ -54,9 +54,13 @@ func StartBot(email, password) {
 	s.Joinroom(TradeTwo)
 	s.JoinRoom(GeneralOne)
 	s.JoinRoom(GeneralTwo)
-	s.Say()
-	s.SendRequest()
-	s.StartMessageHandling()
+        
+        if HelloMessage != "" {
+            s.Say(MyRoom, HelloMessage)
+            }
+        
+        upSince := time.Now()
+
 
 	for {
 		timeout := time.After(time.Minute * 1)
