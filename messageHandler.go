@@ -49,7 +49,7 @@ func (s *State) HandleMessages(m Message, queue chan<- Player) {
 		forceWhisper = (m.Channel == TradeRoom)
 	case "!trade", "!queue":
 		replyMsg = handleTrade(m, queue)
-	case "!upsince"
+	case "!upsince":
 	        replyMsg = fmt.Sprintf("Up since %s", time.Since(upSince))
 
 	if replyMsg != "" {
