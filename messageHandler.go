@@ -58,7 +58,7 @@ func (s *State) HandleMessages(m Message, queue chan<- Player) {
 
 func (s *State) handleOwnerCommands(command, args string, from Player) {
 
-	if from != Conf.Owner {
+	if from != Owner {
 		return
 	}
 	switch command {
