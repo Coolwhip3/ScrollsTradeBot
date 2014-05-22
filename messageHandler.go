@@ -29,7 +29,7 @@ func (s *State) HandleMessages(m Message, queue chan<- Player) {
 
 	switch command {
 	default:
-		s.handleOwnerCommands(command, args, m.From)
+		s.HandleOwnerCommands(command, args, m.From)
 	case "!help":
 		replyMsg = helpText
 		forceWhisper = (m.Channel == TradeRoom)
@@ -49,16 +49,13 @@ func (s *State) HandleMessages(m Message, queue chan<- Player) {
 		forceWhisper = (m.Channel == TradeRoom)
 	case "!trade", "!queue":
 		replyMsg = handleTrade(m, queue)
-	case "!upsince":
-	        replyMsg = fmt.Sprintf("Up since %s", time.Since(upSince))
-
 	if replyMsg != "" {
 		s.sayReplay(replyMsg, forceWhisper, m)
 	        }
         }
 }
 
-func (s *State) handleOwnerCommands(command, args string, from Player) {
+func (s *State) HandleOwnerCommands(command, args string, from Player) {
 
 	if from != Owner {
 		return
@@ -77,9 +74,10 @@ func (s *State) handleOwnerCommands(command, args string, from Player) {
 		s.JoinRoom(Channel(args))
 	case "!leave":
 		s.LeaveRoom(Channel(args))
-	}
-	//case "!uptime":
-	//	replyMsg = fmt.Sprintf("Up since %s", time.Since(upSince))
+	
+	case "!uptime":
+         	replyMsg = fmt.Sprintf("Up since %s", time.Since(upSince))
+         	}
 }
 
 func ParseCommandAndArgs(text string) (command, args string) {
