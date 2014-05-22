@@ -51,7 +51,8 @@ func (s *State) HandleMessages(m Message, queue chan<- Player) {
 		replyMsg = handleTrade(m, queue)
 	if replyMsg != "" {
 		s.sayReplay(replyMsg, forceWhisper, m)
-	        }
+		          }
+                }
         }
 }
 
@@ -74,9 +75,8 @@ func (s *State) HandleOwnerCommands(command, args string, from Player) {
 		s.JoinRoom(Channel(args))
 	case "!leave":
 		s.LeaveRoom(Channel(args))
-	
 	case "!uptime":
-         	replyMsg = fmt.Sprintf("Up since %s", time.Since(upSince))
+         	replyMsg = fmt.Printf("Up since %s", time.Since(upSince))
          	}
 }
 
