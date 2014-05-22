@@ -5,7 +5,7 @@ import (
 	"time"
 	"io/ioutil"
 	"strings"
-
+        "regexp"
 )
 
 const (
@@ -15,8 +15,9 @@ const (
     GeneralOne = "general-1"
     GeneralTwo = "general-2" 
     HelloMessage = "I am a automated trading bot, if you don't know what to do you can just check the !help"
-    email = ""
-    password = ""
+    email = "" //Please update this
+    password = "" //Please update this
+    Owner = "" //Please update this
     )
     
 var reNumbers = regexp.MustCompile(`x?(\d+)x?`)
