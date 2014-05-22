@@ -21,13 +21,15 @@ func (s *State) HandleMessages(m Message, queue chan<- Player) {
 		m.Channel == TradeRoom ||
 		strings.HasPrefix(string(m.Channel), "trading-") {
 		return
-	}
+	
 
 	forceWhisper := false
 	replyMsg := ""
 	command, args := ParseCommandAndArgs(m.Text)
 
 	switch command {
+	default:
+		s.handleOwnerCommands(command, args, m.From)
 	case "!help":
 		replyMsg = helpText
 		forceWhisper = (m.Channel == TradeRoom)
@@ -49,13 +51,11 @@ func (s *State) HandleMessages(m Message, queue chan<- Player) {
 		replyMsg = handleTrade(m, queue)
 	case "!upsince"
 	        replyMsg = fmt.Sprintf("Up since %s", time.Since(upSince))
-	default:
-		s.handleOwnerCommands(command, args, m.From)
-	}
 
 	if replyMsg != "" {
 		s.sayReplay(replyMsg, forceWhisper, m)
-	}
+	        }
+        }
 }
 
 func (s *State) handleOwnerCommands(command, args string, from Player) {
