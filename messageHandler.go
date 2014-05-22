@@ -77,6 +77,7 @@ func (s *State) HandleOwnerCommands(command, args string, from Player) {
 		s.LeaveRoom(Channel(args))
 	case "!uptime":
          	replyMsg = fmt.Printf("Up since %s", time.Since(upSince))
+         	}
 }
 
 func ParseCommandAndArgs(text string) (command, args string) {
