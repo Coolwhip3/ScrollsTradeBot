@@ -65,9 +65,6 @@ func startBot(email, password, helloMessage string) {
         if HelloMessage != "" {
             s.Say(MyRoom, HelloMessage)
             }
-        
-        upSince := time.Now()
-
 
 	for {
 		timeout := time.After(time.Minute * 1)
