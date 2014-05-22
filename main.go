@@ -19,6 +19,9 @@ const (
     password = ""
     )
     
+var reNumbers = regexp.MustCompile(`x?(\d+)x?`)
+var reInvalidChars = regexp.MustCompile("[^a-z'0-9 ]")
+    
 var WTBrequests = make(map[Player]map[Card]int)
 var Bot Player
 var currentState *State
