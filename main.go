@@ -50,7 +50,7 @@ func main() {
 	}
 }
 
-func StartBot(email, password) {
+func StartBot(email, password, HelloMessage) {
 	defer func() {
 		log.Println("Shut bot down.")
 	}()
