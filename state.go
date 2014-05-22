@@ -27,11 +27,12 @@ type Message struct {
 }
 
 var (
-	CardTypes    = make(map[CardId]Card)
-	CardRarities = make(map[Card]int)
-	Libraries    = make(map[Player]MLibraryView)
-	Stocks       = make(map[Player]map[Card]int)
-	PlayerIds    = make(map[Player]PlayerId)
+	CardTypes     = make(map[CardId]Card)
+	CardRarities  = make(map[Card]int)
+	CardResources = make(map[Card]string)
+	Libraries     = make(map[Player]MLibraryView)
+	Stocks        = make(map[Player]map[Card]int)
+	PlayerIds     = make(map[Player]PlayerId)
 )
 
 func InitState(con net.Conn) *State {
@@ -161,6 +162,18 @@ func (s *State) HandleReply(reply []byte) bool {
 		for _, cardType := range v.CardTypes {
 			CardTypes[cardType.Id] = cardType.Name
 			CardRarities[cardType.Name] = cardType.Rarity
+			if cardType.CostDecay > 0 {
+				CardResources[cardType.Name] = "decay"
+			}
+			if cardType.CostEnergy > 0 {
+				CardResources[cardType.Name] = "energy"
+			}
+			if cardType.CostGrowth > 0 {
+				CardResources[cardType.Name] = "growth"
+			}
+			if cardType.CostOrder > 0 {
+				CardResources[cardType.Name] = "order"
+			}
 		}
 		LoadPrices()
 
@@ -233,6 +246,18 @@ func (s *State) HandleReply(reply []byte) bool {
 			}
 		}
 		Stocks[player] = stock
+
+		if player == Bot && len(PriceHistory) == 0 {
+			for _, card := range CardTypes {
+				PriceHistory[card] = append(PriceHistory[card], struct {
+					Date  time.Time
+					Price int
+				}{
+					time.Now(),
+					s.DeterminePrice(card, 1, false),
+				})
+			}
+		}
 
 	case "Ok":
 		var v MOk
