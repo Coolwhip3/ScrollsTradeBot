@@ -15,8 +15,6 @@ const (
     GeneralOne = "general-1"
     GeneralTwo = "general-2" 
     HelloMessage = "I am a automated trading bot, if you don't know what to do you can just check the !help"
-    email = "" //Please update this
-    password = "" //Please update this
     Owner = "" //Please update this
     )
     
@@ -46,11 +44,11 @@ func main() {
 	go startWebServer()
 
         for {
-		StartBot(email, password, HelloMessage)
+		startBot(email, password, "I live again!")
 	}
 }
 
-func StartBot(email, password, HelloMessage) {
+func startBot(email, password, helloMessage string) {
 	defer func() {
 		log.Println("Shut bot down.")
 	}()
