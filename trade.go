@@ -1,6 +1,8 @@
 package main
+package main
 
 import (
+	"encoding/gob"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -16,6 +18,11 @@ import (
 const StockDepth = 15
 
 type Price struct{ Buy, Sell int }
+
+var PriceHistory = make(map[Card][]struct {
+	Date  time.Time
+	Price int
+})
 
 var SGPrices = make(map[Card]Price)
 
@@ -240,6 +247,22 @@ func (s *State) Trade(tradePartner Player) (ts TradeStatus) {
 
 		s.Say(TradeRoom, fmt.Sprintf("Welcome %s. This is an automated trading unit. If you don't know what to do, just say '!help'.", tradePartner))
 
+		hasCard := make(map[Card]bool)
+		for _, card := range Libraries[tradePartner].Cards {
+			hasCard[CardTypes[card.TypeId]] = true
+		}
+
+		var missingCards []Card
+		for _, card := range CardTypes {
+			if !hasCard[card] {
+				missingCards = append(missingCards, card)
+			}
+		}
+
+		if len(missingCards) > 0 && len(missingCards) <= 30 {
+			s.Say(TradeRoom, fmt.Sprintf("There are only %d cards missing in your '!collection'. Want to know what they are?"))
+		}
+
 		request := WTBrequests[tradePartner]
 		if len(request) > 0 {
 			cardIds := make([]CardUid, 0)
@@ -285,6 +308,17 @@ func (s *State) Trade(tradePartner Player) (ts TradeStatus) {
 								" If you change your mind, just repeat the command.")
 						} else {
 							s.Say(TradeRoom, "Okay :(")
+						}
+
+					} else if command == "collection" {
+						if numMissing := len(missingCards); numMissing == 0 {
+							s.Say(TradeRoom, "Your collection is complete! Hooray!")
+						} else {
+							if numMissing > 15 {
+								s.Say(TradeRoom, fmt.Sprintf("Some of your missing cards are: %s", andify(missingCards[0:15])))
+							} else {
+								s.Say(TradeRoom, fmt.Sprintf("You are missing these cards: %s", andify(missingCards)))
+							}
 						}
 
 					} else if command == "reset" {
@@ -481,7 +515,7 @@ func (s *State) Trade(tradePartner Player) (ts TradeStatus) {
 						}
 					}
 					WTBrequests[tradePartner] = nil
-					logTrade(ts)
+					s.logTrade(ts)
 					return
 				}
 
@@ -563,7 +597,7 @@ func (s *State) Trade(tradePartner Player) (ts TradeStatus) {
 	return
 }
 
-func logTrade(ts TradeStatus) {
+func (s *State) logTrade(ts TradeStatus) {
 	file, err := os.OpenFile("trade.log", os.O_WRONLY+os.O_CREATE+os.O_APPEND, 0)
 	deny(err)
 	defer file.Close()
@@ -582,4 +616,28 @@ func logTrade(ts TradeStatus) {
 
 	io.WriteString(file, fmt.Sprintf("%s: Traded with %s.\nTheir offer: [%dg] %s\nMy offer: [%dg] %s\n\n",
 		time.Now().String(), ts.Partner, ts.Their.Gold, list(ts.Their.Cards), ts.My.Gold, list(ts.My.Cards)))
+
+	updatePrices := make(map[Card]bool)
+	for card, _ := range ts.Their.Cards {
+		updatePrices[card] = true
+	}
+	for card, _ := range ts.My.Cards {
+		updatePrices[card] = true
+	}
+	if len(updatePrices) > 0 {
+		for card, _ := range updatePrices {
+			PriceHistory[card] = append(PriceHistory[card], struct {
+				Date  time.Time
+				Price int
+			}{
+				time.Now(),
+				s.DeterminePrice(card, 1, false),
+			})
+		}
+
+		f, err := os.Create("history.dat")
+		deny(err)
+		deny(gob.NewEncoder(f).Encode(PriceHistory))
+		f.Close()
+	}
 }
